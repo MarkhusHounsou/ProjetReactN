@@ -1,13 +1,15 @@
 package fr.mmi.saemanager.services;
 
+import fr.mmi.saemanager.exceptions.SaeNotFoundException;
 import fr.mmi.saemanager.models.Sae;
 import fr.mmi.saemanager.repositories.SaeRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class SaeService {
-    
+
     private final SaeRepository repo;
 
     public SaeService(SaeRepository repo) {
@@ -19,27 +21,51 @@ public class SaeService {
     }
 
     public List<Sae> getAll() {
-        return repo.findAll();
+        return repo.findAllWithNotes();
     }
 
     public Sae getById(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("SAÉ introuvable"));
+        return repo.findByIdWithNotes(id)
+                .orElseThrow(() -> new SaeNotFoundException(id));
+    }
+
+    public Sae updateSae(Long id, Sae updated) {
+        Sae existing = getById(id);
+        existing.setTitre(updated.getTitre());
+        existing.setDescription(updated.getDescription());
+        existing.setSemestre(updated.getSemestre());
+        existing.setDomaine(updated.getDomaine());
+        existing.setImageUrl(updated.getImageUrl());
+        existing.setCompetences(updated.getCompetences());
+        existing.setRessourcesHumaines(updated.getRessourcesHumaines());
+        existing.setDateDebut(updated.getDateDebut());
+        existing.setDateFin(updated.getDateFin());
+        existing.setNote(updated.getNote());
+        existing.setTauxReussite(updated.getTauxReussite());
+        existing.setUeCorrespondante(updated.getUeCorrespondante());
+        existing.setLienSite(updated.getLienSite());
+        existing.setLienCode(updated.getLienCode());
+        return repo.save(existing);
+    }
+
+    public void deleteSae(Long id) {
+        if (!repo.existsById(id)) {
+            throw new SaeNotFoundException(id);
+        }
+        repo.deleteById(id);
     }
 
     public List<Sae> getFiltered(String semestre, String domaine, boolean sortByNoteDesc) {
-        List<Sae> result;
         if (semestre != null && domaine != null) {
-            result = repo.findBySemestreAndDomaine(semestre, domaine);
+            return repo.findBySemestreAndDomaineWithNotes(semestre, domaine);
         } else if (semestre != null) {
-            result = repo.findBySemestre(semestre);
+            return repo.findBySemestreWithNotes(semestre);
         } else if (domaine != null) {
-            result = repo.findByDomaine(domaine);
+            return repo.findByDomaineWithNotes(domaine);
         } else if (sortByNoteDesc) {
-            result = repo.findAllByOrderByNoteDesc();
+            return repo.findAllByOrderByNoteDescWithNotes();
         } else {
-            result = repo.findAll();
+            return repo.findAllWithNotes();
         }
-        return result;
     }
 }

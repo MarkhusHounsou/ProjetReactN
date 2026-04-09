@@ -1,6 +1,7 @@
 package fr.mmi.saemanager.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Sae {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le titre est obligatoire")
     @Column(nullable = false)
     private String titre;
 
@@ -40,7 +42,7 @@ public class Sae {
     private String lienSite;
     private String lienCode;
 
-    @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sae", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<NoteEtudiant> notesEtudiants;
 }

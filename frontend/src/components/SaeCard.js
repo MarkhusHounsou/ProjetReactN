@@ -12,7 +12,7 @@ export default function SaeCard({ sae, onPress }) {
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>{sae.titre}</Text>
-          <Text style={styles.note}>{sae.note ? `${sae.note}/20` : 'Pas de note'}</Text>
+          <Text style={styles.note}>{sae.note != null ? `${sae.note}/20` : 'Pas de note'}</Text>
         </View>
         <Text style={styles.domaine}>{sae.domaine} • {sae.semestre}</Text>
         <Text style={styles.description} numberOfLines={2}>{sae.description}</Text>
